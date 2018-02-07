@@ -4,6 +4,7 @@ import {connect, type TypedState, type Dispatch} from '../util/container'
 import {isMobile} from '../constants/platform'
 import {navigateAppend} from '../actions/route-tree'
 import type {IconType} from '../common-adapters/icon'
+import {pathToIcon} from './icon'
 
 type OwnProps = {
   path: Types.Path,
@@ -28,17 +29,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   },
 })
 
-const iconMap = {
-  file: isMobile ? 'icon-file-24' : 'icon-file-24',
-  folder: isMobile ? 'icon-folder-private-24' : 'icon-folder-private-24',
-  symlink: isMobile ? 'icon-file-24' : 'icon-file-24',
-}
-
 const mergeProps = ({type, path}, {_onOpen}: DispatchProps) => {
-  const icon: IconType = iconMap[Types.pathTypeToString(type)]
-
   return {
-    icon,
+    icon: pathToIcon(type, path),
     name: Types.getPathName(path),
     onOpen: () => _onOpen(type, path),
     path,
