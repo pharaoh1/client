@@ -93,7 +93,7 @@ class FilePreview extends React.PureComponent<FilePreviewProps> {
         <Text type="BodySmall">{humanReadableFileSize(meta.size)}</Text>
         <Button key="share" type="Primary" label="Share"
           style={{marginTop: globalMargins.medium}}/>
-        <Button key="open" type="Secondary" label="Open folder"
+        <Button key="open" type="Secondary" label="Open file"
           style={{marginTop: globalMargins.small}}/>
         </Box>
       </Box>
