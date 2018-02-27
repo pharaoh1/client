@@ -234,12 +234,13 @@ type MerkleTriple struct {
 }
 
 type MerkleUserLeaf struct {
-	public    *MerkleTriple
-	private   *MerkleTriple
-	idVersion int64
-	username  string
-	uid       keybase1.UID
-	eldest    keybase1.KID // may be empty
+	public         *MerkleTriple
+	private        *MerkleTriple
+	idVersion      int64
+	username       string
+	uid            keybase1.UID
+	eldest         keybase1.KID // may be empty
+	resetChainTail *MerkleResetChainTail
 }
 
 type MerkleTeamLeaf struct {
@@ -252,6 +253,12 @@ type MerkleGenericLeaf struct {
 	LeafID  keybase1.UserOrTeamID
 	Public  *MerkleTriple
 	Private *MerkleTriple
+}
+
+type MerkleResetChainTail struct {
+	_struct bool `codec:",toarray"`
+	Seqno   keybase1.Seqno
+	Hash    keybase1.SHA512
 }
 
 func (l MerkleTeamLeaf) MerkleGenericLeaf() *MerkleGenericLeaf {
@@ -273,12 +280,12 @@ func (mul MerkleUserLeaf) MerkleGenericLeaf() *MerkleGenericLeaf {
 type PathSteps []*PathStep
 
 type merkleUserInfoT struct {
-	uid           keybase1.UID
-	uidPath       PathSteps
-	idVersion     int64
-	username      string
-	usernameCased string
-	resetChain    *keybase1.ResetChain
+	uid                  keybase1.UID
+	uidPath              PathSteps
+	idVersion            int64
+	username             string
+	usernameCased        string
+	unverifiedResetChain unverifiedResetChain
 }
 
 type VerificationPath struct {
@@ -832,7 +839,7 @@ func (mc *MerkleClient) readPathFromAPIResUser(ctx context.Context, res *APIRes)
 	}
 	userInfo.usernameCased, _ = res.Body.AtKey("username_cased").GetString()
 
-	userInfo.resetChain, err = importResetChainFromJSON(ctx, mc.G(), res.Body.AtKey("reset_chain"))
+	userInfo.unverifiedResetChain, err = importResetChainFromServer(ctx, mc.G(), res.Body.AtKey("reset_chain"))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -1165,6 +1172,15 @@ func parseV2(jw *jsonw.Wrapper) (*MerkleUserLeaf, error) {
 			return nil, err
 		}
 		user.eldest = eldest
+	}
+
+	if l >= 5 && !jw.AtIndex(4).IsNil() {
+		var ct MerkleResetChainTail
+		err := jw.AtIndex(4).UnmarshalAgain(&ct)
+		if err != nil {
+			return nil, err
+		}
+		user.resetChainTail = &ct
 	}
 
 	return &user, nil
