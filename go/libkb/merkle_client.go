@@ -278,6 +278,7 @@ type merkleUserInfoT struct {
 	idVersion     int64
 	username      string
 	usernameCased string
+	resetChain    *keybase1.ResetChain
 }
 
 type VerificationPath struct {
@@ -693,6 +694,7 @@ func (mc *MerkleClient) lookupPathAndSkipSequenceHelper(ctx context.Context, q H
 
 	q.Add("poll", I{w})
 	q.Add("load_deleted", B{true})
+	q.Add("load_reset_chain", B{true})
 
 	// Add the local db sigHints version
 	if sigHints != nil {
@@ -829,6 +831,11 @@ func (mc *MerkleClient) readPathFromAPIResUser(ctx context.Context, res *APIRes)
 		return nil, nil, err
 	}
 	userInfo.usernameCased, _ = res.Body.AtKey("username_cased").GetString()
+
+	userInfo.resetChain, err = importResetChainFromJSON(ctx, mc.G(), res.Body.AtKey("reset_chain"))
+	if err != nil {
+		return nil, nil, err
+	}
 
 	return vp, userInfo, nil
 }
