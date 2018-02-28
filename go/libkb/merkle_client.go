@@ -234,13 +234,13 @@ type MerkleTriple struct {
 }
 
 type MerkleUserLeaf struct {
-	public         *MerkleTriple
-	private        *MerkleTriple
-	idVersion      int64
-	username       string
-	uid            keybase1.UID
-	eldest         keybase1.KID // may be empty
-	resetChainTail *MerkleResetChainTail
+	public    *MerkleTriple
+	private   *MerkleTriple
+	idVersion int64
+	username  string
+	uid       keybase1.UID
+	eldest    keybase1.KID // may be empty
+	resets    *MerkleResets
 }
 
 type MerkleTeamLeaf struct {
@@ -253,12 +253,6 @@ type MerkleGenericLeaf struct {
 	LeafID  keybase1.UserOrTeamID
 	Public  *MerkleTriple
 	Private *MerkleTriple
-}
-
-type MerkleResetChainTail struct {
-	_struct bool `codec:",toarray"`
-	Seqno   keybase1.Seqno
-	Hash    keybase1.SHA512
 }
 
 func (l MerkleTeamLeaf) MerkleGenericLeaf() *MerkleGenericLeaf {
@@ -1174,13 +1168,11 @@ func parseV2(jw *jsonw.Wrapper) (*MerkleUserLeaf, error) {
 		user.eldest = eldest
 	}
 
-	if l >= 5 && !jw.AtIndex(4).IsNil() {
-		var ct MerkleResetChainTail
-		err := jw.AtIndex(4).UnmarshalAgain(&ct)
+	if l >= 5 {
+		user.resets, err = parseV2LeafResetChainTail(jw.AtIndex(4))
 		if err != nil {
 			return nil, err
 		}
-		user.resetChainTail = &ct
 	}
 
 	return &user, nil
@@ -1495,6 +1487,13 @@ func (mc *MerkleClient) LookupUser(ctx context.Context, q HTTPArgs, sigHints *Si
 
 	if u.username, err = path.verifyUsername(ctx, *userInfo); err != nil {
 		return nil, err
+	}
+
+	if u.resets != nil {
+		err = u.resets.verifyAndLoad(ctx, mc.G(), userInfo.unverifiedResetChain)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	u.idVersion = userInfo.idVersion
