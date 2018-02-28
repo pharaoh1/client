@@ -1806,6 +1806,7 @@ export const uPKUPK2MinorVersion = {
   v3: 3,
   v4: 4,
   v5: 5,
+  v6: 6,
 }
 
 export const uiPromptDefault = {
@@ -3864,6 +3865,7 @@ export type UPK2MinorVersion =
   | 3 // V3_3
   | 4 // V4_4
   | 5 // V5_5
+  | 6 // V6_6
 
 export type UiPromptYesNoRpcParam = $ReadOnly<{text: Text, promptDefault: PromptDefault, incomingCallMap?: IncomingCallMapType, waitingHandler?: WaitingHandlerType}>
 
