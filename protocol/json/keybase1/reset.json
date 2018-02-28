@@ -89,6 +89,28 @@
           "name": "uid"
         }
       ]
+    },
+    {
+      "type": "record",
+      "name": "ResetSummary",
+      "fields": [
+        {
+          "type": "UnixTime",
+          "name": "ctime"
+        },
+        {
+          "type": "ResetMerkleRoot",
+          "name": "merkleRoot"
+        },
+        {
+          "type": "Seqno",
+          "name": "resetSeqno"
+        },
+        {
+          "type": "ResetType",
+          "name": "type"
+        }
+      ]
     }
   ],
   "messages": {},

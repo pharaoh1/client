@@ -38,4 +38,11 @@ protocol Reset {
     UID uid;
   }
 
+  record ResetSummary {
+    UnixTime ctime;
+    ResetMerkleRoot merkleRoot;
+    Seqno resetSeqno;
+    ResetType type;
+  }
+
 }

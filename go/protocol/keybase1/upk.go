@@ -315,6 +315,7 @@ type UserPlusKeysV2 struct {
 	DeviceKeys   map[KID]PublicKeyV2NaCl       `codec:"deviceKeys" json:"deviceKeys"`
 	PGPKeys      map[KID]PublicKeyV2PGPSummary `codec:"pgpKeys" json:"pgpKeys"`
 	RemoteTracks map[UID]RemoteTrack           `codec:"remoteTracks" json:"remoteTracks"`
+	Reset        *ResetSummary                 `codec:"reset,omitempty" json:"reset,omitempty"`
 }
 
 func (o UserPlusKeysV2) DeepCopy() UserPlusKeysV2 {
@@ -370,6 +371,13 @@ func (o UserPlusKeysV2) DeepCopy() UserPlusKeysV2 {
 			}
 			return ret
 		})(o.RemoteTracks),
+		Reset: (func(x *ResetSummary) *ResetSummary {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x).DeepCopy()
+			return &tmp
+		})(o.Reset),
 	}
 }
 

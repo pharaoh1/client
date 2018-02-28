@@ -2306,4 +2306,11 @@ func (e TeamEncryptedKBFSKeysetHash) SecureEqual(l TeamEncryptedKBFSKeysetHash) 
 	return hmac.Equal(e.Bytes(), l.Bytes())
 }
 
-type ResetChain []ResetLink
+func (r ResetLink) Summarize() ResetSummary {
+	return ResetSummary{
+		Ctime:      r.Ctime,
+		MerkleRoot: r.MerkleRoot,
+		ResetSeqno: r.ResetSeqno,
+		Type:       r.Type,
+	}
+}

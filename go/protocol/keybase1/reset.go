@@ -93,6 +93,22 @@ func (o ResetLink) DeepCopy() ResetLink {
 	}
 }
 
+type ResetSummary struct {
+	Ctime      UnixTime        `codec:"ctime" json:"ctime"`
+	MerkleRoot ResetMerkleRoot `codec:"merkleRoot" json:"merkleRoot"`
+	ResetSeqno Seqno           `codec:"resetSeqno" json:"resetSeqno"`
+	Type       ResetType       `codec:"type" json:"type"`
+}
+
+func (o ResetSummary) DeepCopy() ResetSummary {
+	return ResetSummary{
+		Ctime:      o.Ctime.DeepCopy(),
+		MerkleRoot: o.MerkleRoot.DeepCopy(),
+		ResetSeqno: o.ResetSeqno.DeepCopy(),
+		Type:       o.Type.DeepCopy(),
+	}
+}
+
 type ResetInterface interface {
 }
 

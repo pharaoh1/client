@@ -274,6 +274,13 @@
             "keys": "UID"
           },
           "name": "remoteTracks"
+        },
+        {
+          "type": [
+            null,
+            "ResetSummary"
+          ],
+          "name": "reset"
         }
       ]
     },

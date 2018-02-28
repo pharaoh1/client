@@ -59,9 +59,21 @@ func parseV2LeafResetChainTail(jw *jsonw.Wrapper) (*MerkleResets, error) {
 	if jw == nil || jw.IsNil() {
 		return nil, nil
 	}
-	var ct MerkleResetChainTail
-	err := jw.AtIndex(4).UnmarshalAgain(&ct)
+	l, err := jw.Len()
 	if err != nil {
+		return nil, err
+	}
+	if l == 0 {
+		return nil, nil
+	}
+	if l != 2 {
+		return nil, MerkleClientError{m: "bad reset chain tail; expecting 2 items", t: merkleErrorBadResetChain}
+	}
+	var ct MerkleResetChainTail
+	if err := jw.AtIndex(0).UnmarshalAgain(&ct.Seqno); err != nil {
+		return nil, err
+	}
+	if err := jw.AtIndex(1).UnmarshalAgain(&ct.Hash); err != nil {
 		return nil, err
 	}
 	ret := &MerkleResets{chainTail: ct}
@@ -69,9 +81,8 @@ func parseV2LeafResetChainTail(jw *jsonw.Wrapper) (*MerkleResets, error) {
 }
 
 type MerkleResetChainTail struct {
-	_struct bool `codec:",toarray"`
-	Seqno   keybase1.Seqno
-	Hash    keybase1.SHA512
+	Seqno keybase1.Seqno
+	Hash  keybase1.SHA512
 }
 
 type MerkleResets struct {

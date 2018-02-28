@@ -86,6 +86,7 @@ protocol UPK {
       map<KID, PublicKeyV2NaCl> deviceKeys;
       map<KID, PublicKeyV2PGPSummary> pgpKeys;
       map<UID, RemoteTrack> remoteTracks;
+      union { null, ResetSummary } reset;
   }
 
   record UserPlusKeysV2AllIncarnations {
