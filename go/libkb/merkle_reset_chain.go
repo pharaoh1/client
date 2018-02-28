@@ -80,6 +80,12 @@ type MerkleResets struct {
 }
 
 func (mr *MerkleResets) verifyAndLoad(ctx context.Context, g *GlobalContext, urc unverifiedResetChain) (err error) {
+
+	// Don't even both a trace if the user hasn't reset at all
+	if mr == nil {
+		return nil
+	}
+
 	defer g.CVTrace(ctx, VLog0, "MerkleResets#verifyAndLoad", func() error { return err })()
 
 	mkerr := func(f string, a ...interface{}) error {

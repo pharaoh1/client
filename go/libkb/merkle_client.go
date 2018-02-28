@@ -1489,11 +1489,8 @@ func (mc *MerkleClient) LookupUser(ctx context.Context, q HTTPArgs, sigHints *Si
 		return nil, err
 	}
 
-	if u.resets != nil {
-		err = u.resets.verifyAndLoad(ctx, mc.G(), userInfo.unverifiedResetChain)
-		if err != nil {
-			return nil, err
-		}
+	if err = u.resets.verifyAndLoad(ctx, mc.G(), userInfo.unverifiedResetChain); err != nil {
+		return nil, err
 	}
 
 	u.idVersion = userInfo.idVersion
